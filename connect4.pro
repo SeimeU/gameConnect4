@@ -22,7 +22,11 @@ RESOURCES += #    resources.qrc # uncomment for publishing
 
 
 # The .cpp file which was generated for your project. Feel free to hack it.
-SOURCES += main.cpp
+HEADERS += \
+    game.h
+
+SOURCES += main.cpp \
+    game.cpp
 
 android {
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
@@ -42,3 +46,12 @@ win32 {
 macx {
     ICON = macx/app_icon.icns
 }
+
+DISTFILES += \
+    qml/scenes/MenuScene.qml \
+    qml/scenes/GameScene.qml \
+    qml/scenes/EndScene.qml \
+    qml/common/SceneBase.qml \
+    qml/common/FieldButton.qml \
+    qml/common/MenuButton.qml \
+    qml/scenes/EndSceneTied.qml

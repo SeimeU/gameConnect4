@@ -3,6 +3,9 @@
 
 #include <QQmlApplicationEngine>
 
+// include custom class
+#include "game.h"
+
 
 int main(int argc, char *argv[])
 {
@@ -25,6 +28,10 @@ int main(int argc, char *argv[])
     // to avoid deployment of your qml files and images, also comment the DEPLOYMENTFOLDERS command in the .pro file
     // also see the .pro file for more details
     //  vplay.setMainQmlFileName(QStringLiteral("qrc:/qml/Main.qml"));
+
+    // global c++ object added to the QML context as a property
+    game* myGlobal = new game();
+    //engine.rootContext()->setContextProperty("gameFunction", myGlobal);
 
     engine.load(QUrl(vplay.mainQmlFileName()));
 
