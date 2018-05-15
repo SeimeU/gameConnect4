@@ -32,7 +32,7 @@ Rectangle {
        id: mouseArea
        anchors.fill: parent
        onClicked: menuButton.clicked()
-       onPressed: menuButton.opacity = 0.5
-       onReleased: menuButton.opacity = 1
+       onPressed: button.opacity = 0.5
+       onReleased: button.opacity = 1
    }
 }

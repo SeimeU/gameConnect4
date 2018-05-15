@@ -19,38 +19,27 @@ SceneBase {
     // variables for the coordinates
     property int x_gameScene
     property int y_gameScene
+    // loop variable
+    property int c
     // variable to save how many stones already are in this column
-    property variant c
-    c: [6, 6, 6, 6, 6, 6]
-
-    // fixed values
-    property int fixX: 53
-    property int fixY: 31
-    property int addX: 53
-    property int addY: 43
-
-    // "constants" for the size of the pitch
-    property int cColumn:  7
-    property int cRows: 6
-
-    // creating a pitch
-    property variant pitch
-    pitch: [cRows * cColumn]
+    property int c1: 6
+    property int c2: 6
+    property int c3: 6
+    property int c4: 6
+    property int c5: 6
+    property int c6: 6
+    property int c7: 6
 
 
     // function to set the stones and change the player
-    function setStone(player, selectedColumn){
-
-        var row;
-        var column = selectedColumn;
-
-        if(setStoneGame(player, selectedColumn, row))
+    /*function setStone(player, selectedColumn){
+        if(gameFunction.setStoneGame(player, selectedColumn))
         {
-            if(won(player, row, column))
+            if(gameFunction.won(player))
             {
                 endScene()
             }
-            if(tied())
+            if(gameFunction.tied())
             {
                 endSceneTied()
             }
@@ -58,65 +47,65 @@ SceneBase {
             // find the field and color it
             if(selectedColumn === "1")
             {
-                c[0] = c[0] - 1
+                c1: c1 - 1
 
                 // x + c * 53 -> width = 50 and distance between = 3
                 // y + c * 43 -> height = 40 and distance between = 3
                 // y = 31,x = 53 -> left top corner
-                x: fixX
-                y: (fixY + c[0] * addY)
+                x: 53
+                y: (31 + c1 * 43)
             }
             if(selectedColumn === "2")
             {
-                c[1] = c[1] - 1
+                c2: c2 - 1
 
-                x: (fixX + 1 * addX)
-                y: (fixY + c[1] * addY)
+                x: (53 + 1 * 53)
+                y: (31 + c2 * 43)
             }
             if(selectedColumn === "3")
             {
-                c[2] = c[2] - 1
+                c3: c3 - 1
 
-                x: (fixX + 2 * addX)
-                y: (fixY + c[2] * addY)
+                x: (53 + 2 * 53)
+                y: (31 + c3 * 43)
             }
             if(selectedColumn === "4")
             {
-                c[3] = c[3] - 1
+                c4: c4 - 1
 
-                x: (fixX + 3 * addX)
-                y: (fixY + c[3] * addY)
+                x: (53 + 3 * 53)
+                y: (31 + c4 * 43)
             }
             if(selectedColumn === "5")
             {
-                c[4] = c[4] - 1
+                c5: c5 - 1
 
-                x: (fixX + 4 * addX)
-                y: (fixY + c[4] * addY)
+                x: (53 + 4 * 53)
+                y: (31 + c5 * 43)
             }
             if(selectedColumn === "6")
             {
-                c[5] = c[5] - 1
+                c6: c6 - 1
 
-                x: (fixX + 5 * addX)
-                y: (fixY + c[5] * addY)
+                x: (53 + 5 * 53)
+                y: (31 + c6 * 43)
             }
             if(selectedColumn === "7")
             {
-                c[6] = c[6] - 1
+                c7: c7 - 1
 
-                x: (fixX + 6 * addX)
-                y: (fixY + c[6] * addY)
+                x: (53 + 6 * 53)
+                y: (31 + c7 * 43)
             }
 
-            /*Rectangle {
+            Rectangle {
                id: fillRectangle
-               width: 50
+               width:  50
                height: 40
 
                // to round the edges
                radius: 10
-            }*/
+            }
 
         // change active player
         if(player === 1)
@@ -128,158 +117,8 @@ SceneBase {
            state: "player1"
         }
     }
-}
+}*/
 
-function setStoneGame(player, selectedColumn, row){
-
-    var col;
-    var r;
-
-    // my two "constants"
-    var ROWS = cRows;
-    var COLUMNS = cColumn;
-
-    // there is no multidimensional arrays in JavaScript so create my own one
-    var field = new Array();
-
-
-    for(r = 0; r < ROWS;r++){
-        for(col = 0;col < ROWS;col++){
-            field[r] = new Array();
-            field[r][col] = pitch[r * COLUMNS + col];
-        }
-    }
-
-    for(r = ROWS - 1;r >= 0;r++){
-         // "set" the stone in the array
-         if(field[r][col] === 0)
-         {
-              // found a free field
-              pitch[r * COLUMNS + col] = player;
-              row = r;
-
-              return true;
-          }
-   }
-
-   return true;
-
-}
-
-function won(player, row, column){
-
-    var r;
-    var c;
-    var col;
-    // counts the occurence of the active player in a row
-    var counter;
-
-    // my two "constants"
-    var ROWS = cRows;
-    var COLUMNS = cColumn;
-
-    // there is no multidimensional arrays in JavaScript so create my own one
-    var field = new Array();
-
-
-    for(r = 0; r < ROWS;r++){
-        for(col = 0;col < ROWS;col++){
-            field[r] = new Array();
-            field[r][col] = pitch[r * COLUMNS + col];
-        }
-    }
-
-    // check the pross
-    for(c = 0, counter = 0;c < COLUMNS;c++){
-
-        if(field[row][c] === player){
-            counter++;
-
-            if(counter === 4) {
-
-                return true;
-            }
-        }
-        else
-        {
-            counter = 0;
-        }
-    }
-
-    // check the vertical
-    for(r = ROWS - 1, counter = 0;r >= 0;r--){
-        if(field[r][column] === player){
-            counter++;
-
-            if(counter === 4){
-                return true;
-            }
-        }
-        else{
-            counter = 0;
-        }
-    }
-
-    // check the leading diagonal
-    for(c = column, r = row;c > 0 && r > 0;c--, r--);
-
-    for(counter = 0; c < COLUMNS && r < ROWS;c++, r++){
-        if(field[r][c] === player){
-            counter++;
-
-            if(counter === 4){
-                return true;
-            }
-        }
-        else{
-            counter = 0;
-        }
-    }
-
-    // check the minor diagonal
-    for(c = column, r = row;c < COLUMNS - 1 && r > 0;c++, r--);
-
-    for(counter = 0; c >= 0 && r < ROWS;c--, r++){
-        if(pitch[r][c] === player){
-            counter++;
-
-            if(counter === 4){
-                return true;
-            }
-        }
-        else{
-            counter = 0;
-        }
-    }
-
-    return false;
-}
-
-function tied(){
-    var c;
-    var col;
-    var r;
-
-    // there is no multidimensional arrays in JavaScript so create my own one
-    var field = new Array();
-
-
-    for(r = 0; r < ROWS;r++){
-        for(col = 0;col < ROWS;col++){
-            field[r] = new Array();
-            field[r][col] = pitch[r * COLUMNS + col];
-        }
-    }
-
-
-    for(c = 0;c < COLUMNS;c++){
-        if(field[0][c] === 0){
-           return false;
-        }
-    }
-
-    return true;
-}
 
     // player1 starts
    state: "player1"
@@ -306,13 +145,45 @@ function tied(){
             spacing: 3
             columns: 7
 
-            // loop creating the buttons
-            Repeater{
-                model: 7
-                FieldButton{
-                    onClicked: {
-                        setStone(player, model)
-                    }
+            FieldButton {
+                onClicked: {
+                   setStone(player, "1")
+                }
+            }
+
+            FieldButton {
+                onClicked: {
+                   setStone(player, "2")
+                }
+            }
+
+            FieldButton {
+                onClicked: {
+                   setStone(player, "3")
+                }
+            }
+
+            FieldButton {
+                onClicked: {
+                   setStone(player, "4")
+                }
+            }
+
+            FieldButton {
+                onClicked: {
+                   setStone(player, "5")
+                }
+            }
+
+            FieldButton{
+                onClicked: {
+                    setStone(player, "6")
+                }
+            }
+
+            FieldButton{
+                onClicked: {
+                    setStone(player, "7")
                 }
             }
 
@@ -344,6 +215,8 @@ function tied(){
         // when the button is pressed call the function backButtonPressed and clear the activePlayerName string
         onClicked: {
             backButtonPressed()
+            activePlayerName = undefined
+            activePlayerName = ""
         }
     }
 
@@ -370,6 +243,7 @@ function tied(){
     states: [
         State{
             name: "player1"
+            PropertyChanges {target: playerColor; color: "red"}
             PropertyChanges {target: gameScene; activePlayerName: "Player1"}
             PropertyChanges {target: gameScene; player: "1"}
             PropertyChanges {target: playerText; color: "red"}
@@ -377,6 +251,7 @@ function tied(){
         },
         State{
             name: "player2"
+            PropertyChanges {target: playerColor; color: "yellow"}
             PropertyChanges {target: gameScene; activePlayerName: "Player2"}
             PropertyChanges {target: gameScene; player: "2"}
             PropertyChanges {target: playerText; color: "yellow"}
