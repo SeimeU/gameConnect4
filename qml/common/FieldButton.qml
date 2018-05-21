@@ -6,8 +6,10 @@ Rectangle {
    id: fieldButton
 
    width:  50
-   height: 40
-   color: "#e9e9e9"
+   height: 20
+   color: "black"
+   border.color: "black"
+   border.width: 5
 
    // to round the edges
    radius: 10

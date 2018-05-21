@@ -10,6 +10,7 @@ SceneBase {
      // variable that indicates when the button to end the programm is pressed
      signal endProgrammPressed
 
+
      // background
      Rectangle{
          anchors.fill: parent.gameWindowAnchorItem

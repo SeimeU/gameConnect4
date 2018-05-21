@@ -20,8 +20,6 @@ GameWindow {
     GameScene{
         id: gameScene
 
-        // return to the menu scene
-        onBackButtonPressed: window.state = "menu"
         // get to end scene won
         onEndScene: window.state = "endWon"
         //get to end scene tied
@@ -31,9 +29,6 @@ GameWindow {
     // end scene -> won
     EndScene{
         id: endScene
-
-        // return to the menu scene
-        onBackButtonPressed: window.state = "menu"
     }
 
     // end scene -> tied

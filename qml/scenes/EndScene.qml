@@ -11,22 +11,18 @@ SceneBase{
         color: "#324566"
     }
 
-    // return button to return to the menu
+    // exit button to end the programm
     MenuButton{
-        text: "back"
+        text: "Exit"
 
         // place him on the right top edge of the screen at any device
         anchors.right: parent.gameWindowAnchorItem.right
         anchors.rightMargin: 10
         anchors.top: parent.gameWindowAnchorItem.top
         anchors.topMargin: 10
+        // close the program
+        onClicked:  close()
 
-        // when the button is pressed call the function backButtonPressed and clear the activePlayerName string
-        onClicked: {
-            backButtonPressed()
-            activePlayerName = undefined
-            activePlayerName = ""
-        }
     }
 
     // the "logo"

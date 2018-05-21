@@ -15,114 +15,206 @@ SceneBase {
     // the "name" of the active player is stored
     property string activePlayerName
     // the active player is stored
-    property int player: 1
+    property int player
     // variables for the coordinates
-    property int x_gameScene
-    property int y_gameScene
-    // loop variable
-    property int c
-    // variable to save how many stones already are in this column
-    property int c1: 6
-    property int c2: 6
-    property int c3: 6
-    property int c4: 6
-    property int c5: 6
-    property int c6: 6
-    property int c7: 6
+    property variant x_gameScene: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    property variant y_gameScene: [80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80]
 
+    // fixed values
+    property int fixX: 53
+    property int fixY: 31
+    property int addX: 53
+    property int addY: 43
+
+    // "constants" for the size of the pitch
+    property int cColumn:  7
+    property int cRows: 6
+
+    // creating a pitch
+    property variant pitch : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
     // function to set the stones and change the player
-    /*function setStone(player, selectedColumn){
-        if(gameFunction.setStoneGame(player, selectedColumn))
-        {
-            if(gameFunction.won(player))
-            {
-                endScene()
-            }
-            if(gameFunction.tied())
-            {
-                endSceneTied()
-            }
+    function setStone(player, selectedColumn){
 
-            // find the field and color it
-            if(selectedColumn === "1")
-            {
-                c1: c1 - 1
+        var row = setStoneGame(player, selectedColumn);
 
+        if(row){
                 // x + c * 53 -> width = 50 and distance between = 3
                 // y + c * 43 -> height = 40 and distance between = 3
                 // y = 31,x = 53 -> left top corner
-                x: 53
-                y: (31 + c1 * 43)
-            }
-            if(selectedColumn === "2")
-            {
-                c2: c2 - 1
+                gameScene.x_gameScene= (fixX + selectedColumn * addX);
+                gameScene.y_gameScene= (fixY + row * addY);
 
-                x: (53 + 1 * 53)
-                y: (31 + c2 * 43)
-            }
-            if(selectedColumn === "3")
-            {
-                c3: c3 - 1
+                won(player, row, selectedColumn)
 
-                x: (53 + 2 * 53)
-                y: (31 + c3 * 43)
-            }
-            if(selectedColumn === "4")
-            {
-                c4: c4 - 1
+                tied();
 
-                x: (53 + 3 * 53)
-                y: (31 + c4 * 43)
-            }
-            if(selectedColumn === "5")
-            {
-                c5: c5 - 1
-
-                x: (53 + 4 * 53)
-                y: (31 + c5 * 43)
-            }
-            if(selectedColumn === "6")
-            {
-                c6: c6 - 1
-
-                x: (53 + 5 * 53)
-                y: (31 + c6 * 43)
-            }
-            if(selectedColumn === "7")
-            {
-                c7: c7 - 1
-
-                x: (53 + 6 * 53)
-                y: (31 + c7 * 43)
-            }
-
-            Rectangle {
-               id: fillRectangle
-               width:  50
-               height: 40
-
-               // to round the edges
-               radius: 10
-            }
-
-        // change active player
-        if(player === 1)
-        {
-           state: "player2"
-        }
-        else
-        {
-           state: "player1"
+                changePlayer(player);
         }
     }
-}*/
 
+    function changePlayer(player){
 
-    // player1 starts
-   state: "player1"
+        // change active player
+        if(player === 1){
+           gameScene.state= "player2"
+        }
+        else{
+          gameScene.state=  "player1"
+        }
+    }
 
+function setStoneGame(player, selectedColumn){
+    var col;
+    var r;
+
+    // my two "constants"
+    var ROWS = cRows;
+    var COLUMNS = cColumn;
+
+    // multidimensional array
+    var field = [[0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0]];
+
+    for(r = 0; r < ROWS;r++){
+        for(col = 0;col < COLUMNS;col++){
+           field[r][col] = pitch[r * COLUMNS + col];
+        }
+    }
+
+    for(r = ROWS - 1, col = selectedColumn;r >= 0;r--){
+        // "set" the stone in the array
+        if(field[r][col] === 0){
+           // found a free field
+           pitch[r * COLUMNS + col] = player;
+           // return the active row
+           return r;
+        }
+     }
+
+     return -1;
+}
+
+function won(player, row, column){
+    var r;
+    var c;
+    var col;
+    // counts the occurence of the active player in a row
+    var counter;
+
+    // my two "constants"
+    var ROWS = cRows;
+    var COLUMNS = cColumn;
+
+    // multidimensional array
+    var field = [[0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0]];
+
+    for(r = 0; r < ROWS;r++){
+       for(col = 0;col < ROWS;col++){  
+            field[r][col] = pitch[r * COLUMNS + col];
+       }
+    }
+
+    // check the pross
+    for(c = 0, counter = 0;c < COLUMNS;c++){
+
+        if(field[row][c] === player){
+            counter++;
+
+            if(counter === 4) {
+                endScene();
+            }
+        }
+        else{
+           counter = 0;
+        }
+     }
+
+     // check the vertical
+     for(r = ROWS - 1, counter = 0;r >= 0;r--){
+        if(field[r][column] === player){
+           counter++;
+
+           if(counter === 4){
+                endScene();
+           }
+         }
+         else{
+            counter = 0;
+         }
+     }
+
+     // check the leading diagonal
+     for(c = column, r = row;c > 0 && r > 0;c--, r--);
+
+     for(counter = 0; c < COLUMNS && r < ROWS;c++, r++){
+         if(field[r][c] === player){
+             counter++;
+
+             if(counter === 4){
+                endScene();
+             }
+         }
+         else{
+             counter = 0;
+         }
+     }
+
+     // check the minor diagonal
+     for(c = column, r = row;c < COLUMNS - 1 && r > 0;c++, r--);
+
+     for(counter = 0; c >= 0 && r < ROWS;c--, r++){
+         if(pitch[r][c] === player){
+             counter++;
+
+             if(counter === 4){
+                 endScene();
+              }
+         }
+         else{
+             counter = 0;
+         }
+   }
+}
+
+function tied(){
+    var c;
+    var col;
+    var r;
+    var ROWS = cRows;
+    var COLUMNS = cColumn;
+
+    // multidimensional array
+    var field = [[0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0]];
+
+    for(r = 0; r < ROWS;r++){
+       for(col = 0;col < ROWS;col++){
+            field[r][col] = pitch[r * COLUMNS + col];
+       }
+    }
+
+    for(c = 0;c < COLUMNS;c++){
+        if(field[0][c] === 0){
+           return;
+        }
+    }
+
+    endSceneTied();
+}
    // background
     Rectangle{
         // the outside of the window -> changing its color to the player's color
@@ -145,58 +237,28 @@ SceneBase {
             spacing: 3
             columns: 7
 
-            FieldButton {
-                onClicked: {
-                   setStone(player, "1")
-                }
-            }
-
-            FieldButton {
-                onClicked: {
-                   setStone(player, "2")
-                }
-            }
-
-            FieldButton {
-                onClicked: {
-                   setStone(player, "3")
-                }
-            }
-
-            FieldButton {
-                onClicked: {
-                   setStone(player, "4")
-                }
-            }
-
-            FieldButton {
-                onClicked: {
-                   setStone(player, "5")
-                }
-            }
-
-            FieldButton{
-                onClicked: {
-                    setStone(player, "6")
-                }
-            }
-
-            FieldButton{
-                onClicked: {
-                    setStone(player, "7")
-                }
-            }
-
             // loop creating the fields
             Repeater{
-                model: 35       // 7(columns) * (6 - 1)(rows)
+                model: 42       // 7(columns) * (6 - 1)(rows)
                 Rectangle {
                    width:  50
                    height: 40
                    color: "#e9e9e9"
 
+                   border.color: "black"
+                   border.width: 5
+
                    // to round the edges
                    radius: 10
+                }
+            }
+
+            Repeater{
+                model: 7
+                FieldButton{
+                    onClicked:{
+                        setStone(player, index)
+                    }
                 }
             }
         }
@@ -204,7 +266,7 @@ SceneBase {
 
     // return button to return to the menu
     MenuButton{
-        text: "back"
+        text: "exit"
 
         // place him on the right top edge of the screen at any device
         anchors.right: gameScene.gameWindowAnchorItem.right
@@ -213,11 +275,7 @@ SceneBase {
         anchors.topMargin: 1
 
         // when the button is pressed call the function backButtonPressed and clear the activePlayerName string
-        onClicked: {
-            backButtonPressed()
-            activePlayerName = undefined
-            activePlayerName = ""
-        }
+        onClicked: close()
     }
 
     // name of the current player
@@ -229,6 +287,21 @@ SceneBase {
         font.pixelSize: 20
         text: activePlayerName !== undefined ? activePlayerName : ""
     }
+
+    Rectangle {
+        id: fillRectangle
+        width:  50
+        height: 40
+        border.color: "black"
+        border.width: 5
+        // to round the edges
+        radius: 10
+        x: x_gameScene
+        y: y_gameScene
+    }
+
+    // player1 starts
+   state: "player1"
 
     // place a logo on the top left corner
     Image{
@@ -243,17 +316,15 @@ SceneBase {
     states: [
         State{
             name: "player1"
-            PropertyChanges {target: playerColor; color: "red"}
             PropertyChanges {target: gameScene; activePlayerName: "Player1"}
-            PropertyChanges {target: gameScene; player: "1"}
+            PropertyChanges {target: gameScene; player: 1}
             PropertyChanges {target: playerText; color: "red"}
             PropertyChanges {target: fillRectangle; color: "red"}
         },
         State{
             name: "player2"
-            PropertyChanges {target: playerColor; color: "yellow"}
             PropertyChanges {target: gameScene; activePlayerName: "Player2"}
-            PropertyChanges {target: gameScene; player: "2"}
+            PropertyChanges {target: gameScene; player: 2}
             PropertyChanges {target: playerText; color: "yellow"}
             PropertyChanges {target: fillRectangle; color: "yellow"}
         }
