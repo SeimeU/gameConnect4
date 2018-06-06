@@ -52,4 +52,5 @@ DISTFILES += \
     qml/common/SceneBase.qml \
     qml/common/FieldButton.qml \
     qml/common/MenuButton.qml \
-    qml/scenes/EndSceneTied.qml
+    qml/scenes/EndSceneTied.qml \
+    qml/common/Block.qml

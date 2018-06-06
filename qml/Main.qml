@@ -8,12 +8,21 @@ GameWindow {
     screenWidth: 960
     screenHeight: 640
 
+    // for dynamic creation of entities
+    EntityManager {
+      id: entityManager
+      entityContainer: gameScene
+    }
+
     // menu scene
     MenuScene{
         id: menuScene
 
         // look at the button signal in the menu and change the windowstate if the buttons is pressed
-        onStartGamePressed: window.state = "game"
+        onStartGamePressed: {
+            window.state = "game"
+            gameScene.initializeField()
+        }
     }
 
     // scene where the actual game is played

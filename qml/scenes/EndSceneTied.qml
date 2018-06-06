@@ -49,7 +49,7 @@ SceneBase{
         source: "../../assets/vplay-logo.png"
         width: 50
         height: 50
-        anchors.left: menuScene.gameWindowAnchorItem.left
-        anchors.top: menuScene.gameWindowAnchorItem.top
+        anchors.left: parent.gameWindowAnchorItem.left
+        anchors.top: parent.gameWindowAnchorItem.top
     }
 }

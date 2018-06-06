@@ -28,7 +28,14 @@ SceneBase{
     // the "logo"
     Text {
           // headline positioned on the top center of the screen at any resolution without borders
-          text: "The winner is Player" + gameScene.player
+          text: {
+              if(gameScene.Player == 1){
+                    return "The winner is Player" + 2
+              }
+              else{
+                  return "The winner is Player" + 1
+              }
+          }
           font.pixelSize: 30
           color: "#e9e9e9"
           anchors.horizontalCenter: parent.gameWindowAnchorItem.horizontalCenter
@@ -49,7 +56,7 @@ SceneBase{
         source: "../../assets/vplay-logo.png"
         width: 50
         height: 50
-        anchors.left: menuScene.gameWindowAnchorItem.left
-        anchors.top: menuScene.gameWindowAnchorItem.top
+        anchors.left: parent.gameWindowAnchorItem.left
+        anchors.top: parent.gameWindowAnchorItem.top
     }
 }

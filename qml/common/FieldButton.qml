@@ -6,9 +6,9 @@ Rectangle {
    id: fieldButton
 
    width:  50
-   height: 20
+   height: 40
    color: "black"
-   border.color: "black"
+   border.color: "#e9e9e9"
    border.width: 5
 
    // to round the edges

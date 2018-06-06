@@ -15,10 +15,9 @@ SceneBase {
     // the "name" of the active player is stored
     property string activePlayerName
     // the active player is stored
-    property int player
-    // variables for the coordinates
-    property variant x_gameScene: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-    property variant y_gameScene: [80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80]
+    property int player: 0
+    // switch betweemn the "pitch building mode" and the "stone setting mode"
+    property int check: 0
 
     // fixed values
     property int fixX: 53
@@ -33,19 +32,26 @@ SceneBase {
     // creating a pitch
     property variant pitch : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
+    // array for handling game field
+    property var field: []
+
     // function to set the stones and change the player
     function setStone(player, selectedColumn){
+        // switch from "pitch building mode" to "stone setting mode" ;)
+        check = 1;
 
         var row = setStoneGame(player, selectedColumn);
 
-        if(row){
+        if(row >= 0){
                 // x + c * 53 -> width = 50 and distance between = 3
                 // y + c * 43 -> height = 40 and distance between = 3
                 // y = 31,x = 53 -> left top corner
-                gameScene.x_gameScene= (fixX + selectedColumn * addX);
-                gameScene.y_gameScene= (fixY + row * addY);
+                //gameScene.x_gameScene= (fixX + selectedColumn * addX);
+                //gameScene.y_gameScene= (fixY + row * addY);
 
-                won(player, row, selectedColumn)
+                createBlock(row, selectedColumn);
+
+                won(player, row, selectedColumn);
 
                 tied();
 
@@ -126,7 +132,6 @@ function won(player, row, column){
 
     // check the pross
     for(c = 0, counter = 0;c < COLUMNS;c++){
-
         if(field[row][c] === player){
             counter++;
 
@@ -190,37 +195,92 @@ function tied(){
     var c;
     var col;
     var r;
-    var ROWS = cRows;
     var COLUMNS = cColumn;
 
-    // multidimensional array
-    var field = [[0,0,0,0,0,0,0],
-                 [0,0,0,0,0,0,0],
-                 [0,0,0,0,0,0,0],
-                 [0,0,0,0,0,0,0],
-                 [0,0,0,0,0,0,0],
-                 [0,0,0,0,0,0,0]];
-
-    for(r = 0; r < ROWS;r++){
-       for(col = 0;col < ROWS;col++){
-            field[r][col] = pitch[r * COLUMNS + col];
-       }
-    }
-
     for(c = 0;c < COLUMNS;c++){
-        if(field[0][c] === 0){
+        if(pitch[c] === 0){
            return;
         }
     }
 
     endSceneTied();
 }
+
+// calculate field index
+function index(row, column) {
+  return row * cColumn + column
+}
+
+// fill game field with blocks
+function initializeField() {
+  // clear field
+  clearField()
+
+  // fill field
+  for(var i = 0; i < cRows; i++) {
+    for(var j = 0; j < cColumn; j++) {
+      gameScene.field[index(i, j)] = createBlock(i, j)
+    }
+  }
+}
+
+// create a new block at specific position
+function createBlock(row, column) {
+  // configure block
+  // we use the variable check to prove if you want to build the field or to set a block
+  if(check == 0){
+      var entityProperties = {
+        width: 50,
+        height: 40,
+        x: column * addX + fixX,
+        y: row * addY + fixY,
+
+        type: 0,
+        row: row,
+        column: column
+      }
+  }
+  else{
+      var entityProperties = {
+        width: 50,
+        height: 40,
+        x: column * addX + fixX,
+        y: row * addY + fixY,
+
+        type: player,
+        row: row,
+        column: column
+      }
+  }
+
+  // add block to game area
+  var id = entityManager.createEntityFromUrlWithProperties(Qt.resolvedUrl("../common/Block.qml"), entityProperties)
+
+  // link click signal from block to handler function
+  var entity = entityManager.getEntityById(id)
+
+  return entity
+}
+
+// clear game field
+function clearField() {
+  // remove entities
+  for(var i = 0; i < gameScene.field.length; i++) {
+    var block = gameScene.field[i]
+    if(block !== null)  {
+      entityManager.removeEntityById(block.entityId)
+    }
+  }
+  gameScene.field = []
+}
+
+
    // background
     Rectangle{
-        // the outside of the window -> changing its color to the player's color
         anchors.fill: parent.gameWindowAnchorItem
         color: "#324566"
     }
+
 
     // playing pitch
     Rectangle{
@@ -233,25 +293,9 @@ function tied(){
 
         // creating the pitch
         Grid{
-            anchors.centerIn: menuScene
+            anchors.centerIn: parent.gameWindowAnchorItem
             spacing: 3
             columns: 7
-
-            // loop creating the fields
-            Repeater{
-                model: 42       // 7(columns) * (6 - 1)(rows)
-                Rectangle {
-                   width:  50
-                   height: 40
-                   color: "#e9e9e9"
-
-                   border.color: "black"
-                   border.width: 5
-
-                   // to round the edges
-                   radius: 10
-                }
-            }
 
             Repeater{
                 model: 7
@@ -263,6 +307,9 @@ function tied(){
             }
         }
     }
+
+    // player1 starts
+    state: "player1"
 
     // return button to return to the menu
     MenuButton{
@@ -288,28 +335,13 @@ function tied(){
         text: activePlayerName !== undefined ? activePlayerName : ""
     }
 
-    Rectangle {
-        id: fillRectangle
-        width:  50
-        height: 40
-        border.color: "black"
-        border.width: 5
-        // to round the edges
-        radius: 10
-        x: x_gameScene
-        y: y_gameScene
-    }
-
-    // player1 starts
-   state: "player1"
-
     // place a logo on the top left corner
     Image{
         source: "../../assets/vplay-logo.png"
         width: 50
         height: 50
-        anchors.left: menuScene.gameWindowAnchorItem.left
-        anchors.top: menuScene.gameWindowAnchorItem.top
+        anchors.left: parent.gameWindowAnchorItem.left
+        anchors.top: parent.gameWindowAnchorItem.top
     }
 
     // state machine -> to care about the changes when changing the player
@@ -319,14 +351,12 @@ function tied(){
             PropertyChanges {target: gameScene; activePlayerName: "Player1"}
             PropertyChanges {target: gameScene; player: 1}
             PropertyChanges {target: playerText; color: "red"}
-            PropertyChanges {target: fillRectangle; color: "red"}
         },
         State{
             name: "player2"
             PropertyChanges {target: gameScene; activePlayerName: "Player2"}
             PropertyChanges {target: gameScene; player: 2}
             PropertyChanges {target: playerText; color: "yellow"}
-            PropertyChanges {target: fillRectangle; color: "yellow"}
         }
     ]
 }
